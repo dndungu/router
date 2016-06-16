@@ -32,9 +32,7 @@ func TestFind(t *testing.T) {
 
 	handler_name := FuncName(handlers[0])
 	if strings.Compare("handlerB", handler_name) != 0 {
-		t.Error("Test")
-		t.Error(handler_name)
-		t.Errorf("Expected to find handlerB in the handlers list")
+		t.Fatalf("Expected to find handlerB in the handlers list")
 	}
 }
 
