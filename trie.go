@@ -50,11 +50,6 @@ func (n *node) Find(path string, params url.Values) (*node, string) {
 	if len(n.children) == 0 {
 		return n, keys[0]
 	}
-	return n.search(path, params)
-}
-
-func (n *node) search(path string, params url.Values) (*node, string) {
-	keys := strings.Split(path, "/")
 	for _, child := range n.children {
 		if keys[0] != child.key && child.param == false {
 			continue
