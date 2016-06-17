@@ -25,9 +25,9 @@ func (r *Router) Add(method, path string, handlers ...Handler) {
 
 func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	params := url.Values{}
+	context.Set(req, "params", params)
 	keys := strings.Split(req.URL.Path, "/")[1:]
 	node, _ := r.tree.Search(strings.Join(keys, "/"), params)
-	context.Set(req, "path_params", params)
 	handlers := node.handlers[req.Method]
 	if handlers == nil {
 		r.handler(w, req)
@@ -36,5 +36,5 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	for _, h := range handlers {
 		h(w, req)
 	}
-	context.Clear(req)
+	//	context.Clear(req)
 }
