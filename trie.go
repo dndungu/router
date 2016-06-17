@@ -16,7 +16,7 @@ func NewNode() *node {
 	return &node{key: "", param: false, handlers: make(map[string][]Handler)}
 }
 
-func (n *node) Add(method, path string, handlers ...Handler) {
+func (n *node) Insert(method, path string, handlers ...Handler) {
 	i := 0
 	if path[0] == '/' {
 		i = 1
@@ -24,7 +24,7 @@ func (n *node) Add(method, path string, handlers ...Handler) {
 	keys := strings.Split(path[i:], "/")
 	count := len(keys)
 	for {
-		child, key := n.Find(path[i:], nil)
+		child, key := n.Search(path[i:], nil)
 		if child.key == key && count == 1 {
 			child.handlers[method] = handlers
 			return
@@ -45,7 +45,7 @@ func (n *node) Add(method, path string, handlers ...Handler) {
 	}
 }
 
-func (n *node) Find(path string, params url.Values) (*node, string) {
+func (n *node) Search(path string, params url.Values) (*node, string) {
 	keys := strings.Split(path, "/")
 	if len(n.children) == 0 {
 		return n, keys[0]
@@ -59,7 +59,7 @@ func (n *node) Find(path string, params url.Values) (*node, string) {
 		}
 		next := strings.Join(keys[1:], "/")
 		if len(next) > 0 {
-			return child.Find(next, params)
+			return child.Search(next, params)
 		}
 		return child, keys[0]
 	}

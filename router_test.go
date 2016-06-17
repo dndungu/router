@@ -11,7 +11,7 @@ import (
 )
 
 func TestDefaultHandler(t *testing.T) {
-	r := NewRouter(DefaultHandler)
+	r := New(DefaultHandler)
 	ts := httptest.NewServer(r)
 	defer ts.Close()
 	res, _ := http.Get(ts.URL)
@@ -27,10 +27,10 @@ func DefaultHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func TestPath(t *testing.T) {
-	r := NewRouter(DefaultHandler)
-	r.Route("GET", "/test/:name", SomeHandler)
-	r.Route("GET", "/test/dosimilar", SomeHandler)
-	r.Route("GET", "/test/dosimilar/still", SomeHandler)
+	r := New(DefaultHandler)
+	r.Add("GET", "/test/:name", SomeHandler)
+	r.Add("GET", "/test/dosimilar", SomeHandler)
+	r.Add("GET", "/test/dosimilar/still", SomeHandler)
 	ts := httptest.NewServer(r)
 	defer ts.Close()
 	var u bytes.Buffer
