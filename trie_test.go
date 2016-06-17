@@ -30,8 +30,8 @@ func TestSearch(t *testing.T) {
 		return
 	}
 
-	handler_name := FuncName(handlers[0])
-	if strings.Compare("handlerB", handler_name) != 0 {
+	handlerName := FuncName(handlers[0])
+	if strings.Compare("handlerB", handlerName) != 0 {
 		t.Fatalf("Expected to find handlerB in the handlers list")
 	}
 }
