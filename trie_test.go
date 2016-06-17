@@ -45,6 +45,6 @@ func handlerB(w http.ResponseWriter, req *http.Request) {
 func FuncName(h Handler) string {
 	p := runtime.FuncForPC(reflect.ValueOf(h).Pointer()).Name()
 	handlers := strings.Split(p, "/")
-	long_name := handlers[len(handlers)-1]
-	return strings.Split(long_name, ".")[1]
+	longName := handlers[len(handlers)-1]
+	return strings.Split(longName, ".")[1]
 }
