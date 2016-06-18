@@ -39,5 +39,5 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	for _, h := range handlers {
 		h(w, req)
 	}
-	//	context.Clear(req)
+	context.Clear(req)
 }
