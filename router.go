@@ -28,6 +28,11 @@ func (r *Router) Add(method, path string, handlers ...Handler) {
 	r.tree.insert(method, path, handlers...)
 }
 
+// Params - this returns any URL parameter if it exists
+func Params(req *http.Request) url.Values {
+	return context.Get(req, "params").(url.Values)
+}
+
 // ServeHTTP - this method is called every time a new request comes in
 func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	params := url.Values{}
