@@ -1,3 +1,4 @@
+// router - this is a golang HTTP router that implements a trie data structure for optimal performance
 package router
 
 import (
@@ -7,8 +8,10 @@ import (
 	"strings"
 )
 
+// Handler - this a http handler middleware function
 type Handler func(http.ResponseWriter, *http.Request)
 
+// Router - the router keeps a record of different paths and their handlers, it will direct incoming http calls to the right handler
 type Router struct {
 	tree    *node
 	handler Handler

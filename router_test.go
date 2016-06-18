@@ -65,9 +65,9 @@ func request(router *Router, path string) string {
 
 }
 
-func testURL(base_url, path string) string {
+func testURL(baseURL, path string) string {
 	var u bytes.Buffer
-	u.WriteString(base_url)
+	u.WriteString(baseURL)
 	u.WriteString("/test/golang")
 	return u.String()
 }
