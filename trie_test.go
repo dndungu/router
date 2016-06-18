@@ -9,20 +9,20 @@ import (
 	"testing"
 )
 
-func TestInsert(t *testing.T) {
-	tree := NewNode()
+func Testinsert(t *testing.T) {
+	tree := newNode()
 	path := "/test-add"
 	verb := "GET"
-	tree.Insert(verb, path, handlerA)
+	tree.insert(verb, path, handlerA)
 }
 
-func TestSearch(t *testing.T) {
-	tree := NewNode()
+func Testsearch(t *testing.T) {
+	tree := newNode()
 	verb := "GET"
 	params := url.Values{}
 	path := "/test-find"
-	tree.Insert(verb, path, handlerB)
-	leaf, _ := tree.Search(path[1:], params)
+	tree.insert(verb, path, handlerB)
+	leaf, _ := tree.search(path[1:], params)
 
 	handlers := leaf.handlers[verb]
 	if len(handlers) != 1 {
