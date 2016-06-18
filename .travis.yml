@@ -4,5 +4,5 @@ go:
   - 1.6
 script:
   - go test -v -covermode=count -coverprofile=coverage.out ./...
-adter_success:
+after_success:
   - bash <(curl -s https://codecov.io/bash)
