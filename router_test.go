@@ -3,11 +3,9 @@ package router
 import (
 	"bytes"
 	"fmt"
-	"github.com/gorilla/context"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
-	"net/url"
 	"strings"
 	"testing"
 )
@@ -73,8 +71,8 @@ func testURL(baseURL, path string) string {
 }
 
 func paramHandler(w http.ResponseWriter, req *http.Request) {
-	params := context.Get(req, "params")
-	fmt.Fprint(w, params.(url.Values).Get("name"))
+	params := Params(req)
+	fmt.Fprint(w, params.Get("name"))
 }
 
 func handlerZero(w http.ResponseWriter, req *http.Request) {
