@@ -23,6 +23,41 @@ func New(handler Handler) *Router {
 	return &Router{tree: root, handler: handler}
 }
 
+// Connect - add a CONNECT handler for the specified path
+func (r *Router) Connect(path string, handlers ...Handler) {
+	r.tree.insert("CONNECT", path, handlers...)
+}
+
+// Delete - add a DELETE handler for the specified path
+func (r *Router) Delete(path string, handlers ...Handler) {
+	r.tree.insert("DELETE", path, handlers...)
+}
+
+// Get - add a GET handler for the specified path
+func (r *Router) Get(path string, handlers ...Handler) {
+	r.tree.insert("GET", path, handlers...)
+}
+
+// Post - add a POST handler for the specified path
+func (r *Router) Post(path string, handlers ...Handler) {
+	r.tree.insert("POST", path, handlers...)
+}
+
+// Put - add a PUT handler for the specified path
+func (r *Router) Put(path string, handlers ...Handler) {
+	r.tree.insert("PUT", path, handlers...)
+}
+
+// Patch - add a PATCH handler for the specified path
+func (r *Router) Patch(path string, handlers ...Handler) {
+	r.tree.insert("PATCH", path, handlers...)
+}
+
+// Trace - add a TRACE handler for the specified path
+func (r *Router) Trace(path string, handlers ...Handler) {
+	r.tree.insert("TRACE", path, handlers...)
+}
+
 // Add - this method adds a path and it's handlers to the router
 func (r *Router) Add(method, path string, handlers ...Handler) {
 	r.tree.insert(method, path, handlers...)
