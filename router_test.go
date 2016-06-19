@@ -31,7 +31,22 @@ func TestPaths(t *testing.T) {
 	routes := []string{"/a", "/a/b", "/a/b/c", "/a/b/c/d"}
 	handlers := []Handler{handlerZero, handlerOne, handlerTwo, handlerThree}
 	router := initRouter(methods, routes, handlers)
-	request(router, "a/b")
+	get(router, "a/b")
+}
+
+func TestVerbs(t *testing.T) {
+	router := New(DefaultHandler)
+  router.Get("/t/b", handlerZero)
+  router.Post("t/b", handlerOne)
+  router.Put("t/b", handlerTwo)
+  router.Delete("t/b", handlerThree)
+  router.Connect("t/b", handlerFour)
+  router.Patch("t/b", handlerFive)
+  router.Trace("t/b", handlerSix)
+  response := get(router, "/t/b")
+  if strings.Compare(response, "handlerZero") != 0 {
+		t.Fatalf("Expected a body with 'handlerZero', got %s", response)
+  }
 }
 
 func TestParams(t *testing.T) {
@@ -39,7 +54,7 @@ func TestParams(t *testing.T) {
 	routes := []string{"/test/:name"}
 	handlers := []Handler{paramHandler}
 	router := initRouter(methods, routes, handlers)
-	response := request(router, "/test/golang")
+	response := get(router, "/test/golang")
 	if strings.Compare(response, "golang") != 0 {
 		t.Fatalf("Expected a body with 'golang' got '%s'", response)
 	}
@@ -53,20 +68,19 @@ func initRouter(methods []string, routes []string, handlers []Handler) *Router {
 	return router
 }
 
-func request(router *Router, path string) string {
+func get(router *Router, path string) string {
 	ts := httptest.NewServer(router)
 	defer ts.Close()
 	res, _ := http.Get(testURL(ts.URL, path))
 	body, _ := ioutil.ReadAll(res.Body)
 	res.Body.Close()
 	return string(body)
-
 }
 
 func testURL(baseURL, path string) string {
 	var u bytes.Buffer
 	u.WriteString(baseURL)
-	u.WriteString("/test/golang")
+	u.WriteString(path)
 	return u.String()
 }
 
@@ -89,4 +103,16 @@ func handlerTwo(w http.ResponseWriter, req *http.Request) {
 
 func handlerThree(w http.ResponseWriter, req *http.Request) {
 	fmt.Fprint(w, "handlerThree")
+}
+
+func handlerFour(w http.ResponseWriter, req *http.Request) {
+	fmt.Fprint(w, "handlerFour")
+}
+
+func handlerFive(w http.ResponseWriter, req *http.Request) {
+	fmt.Fprint(w, "handlerFive")
+}
+
+func handlerSix(w http.ResponseWriter, req *http.Request) {
+	fmt.Fprint(w, "handlerSix")
 }
