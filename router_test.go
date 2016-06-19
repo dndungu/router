@@ -12,13 +12,9 @@ import (
 
 func TestDefaultHandler(t *testing.T) {
 	r := New(DefaultHandler)
-	ts := httptest.NewServer(r)
-	defer ts.Close()
-	res, _ := http.Get(ts.URL)
-	body, _ := ioutil.ReadAll(res.Body)
-	res.Body.Close()
-	if strings.Compare(string(body), "DefaultHandler") != 0 {
-		t.Fatalf("Expected a body with 'DefaultHandler' got '%s'", body)
+	response := get(r, "/")
+	if strings.Compare(response, "DefaultHandler") != 0 {
+		t.Fatalf("Expected a body with 'DefaultHandler' got '%s'", response)
 	}
 }
 
@@ -36,17 +32,17 @@ func TestPaths(t *testing.T) {
 
 func TestVerbs(t *testing.T) {
 	router := New(DefaultHandler)
-  router.Get("/t/b", handlerZero)
-  router.Post("t/b", handlerOne)
-  router.Put("t/b", handlerTwo)
-  router.Delete("t/b", handlerThree)
-  router.Connect("t/b", handlerFour)
-  router.Patch("t/b", handlerFive)
-  router.Trace("t/b", handlerSix)
-  response := get(router, "/t/b")
-  if strings.Compare(response, "handlerZero") != 0 {
+	router.Get("/t/b", handlerZero)
+	router.Post("t/b", handlerOne)
+	router.Put("t/b", handlerTwo)
+	router.Delete("t/b", handlerThree)
+	router.Connect("t/b", handlerFour)
+	router.Patch("t/b", handlerFive)
+	router.Trace("t/b", handlerSix)
+	response := get(router, "/t/b")
+	if strings.Compare(response, "handlerZero") != 0 {
 		t.Fatalf("Expected a body with 'handlerZero', got %s", response)
-  }
+	}
 }
 
 func TestParams(t *testing.T) {
