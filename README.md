@@ -19,7 +19,7 @@ import (
 
 func main() {
 	router := router.New(DefaultHandler)
-	router.Add("GET", "/test/:test_id", HandlerA, HandlerB, HandlerC)
+	router.Get("/test/:test_id", HandlerA, HandlerB, HandlerC)
 	http.ListenAndServe(":8080", router)
 }
 
