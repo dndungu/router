@@ -20,9 +20,9 @@ import (
 )
 
 func main() {
-	router := router.New(DefaultHandler)
-	router.Get("/test/:test_id", HandlerA, HandlerB, HandlerC)
-	http.ListenAndServe(":8080", router)
+	r := router.New(DefaultHandler)
+	r.Get("/test/:test_id", HandlerA, HandlerB, HandlerC)
+	http.ListenAndServe(":8080", r)
 }
 
 func DefaultHandler(w http.ResponseWriter, r *http.Request) {
