@@ -58,12 +58,22 @@ func (r *Router) Trace(path string, handlers ...Handler) {
 	r.tree.insert("TRACE", path, handlers...)
 }
 
+// Options - add a OPTIONS handler for the specified path
+func (r *Router) Options(path string, handlers ...Handler) {
+	r.tree.insert("OPTIONS", path, handlers...)
+}
+
 // Add - this method adds a path and it's handlers to the router
 func (r *Router) Add(method, path string, handlers ...Handler) {
 	r.tree.insert(method, path, handlers...)
 }
 
-// Params - this returns any URL parameter if it exists
+// Params - this method returns any URL parameter if it exists
+func (r *Router) Params(req *http.Request) url.Values {
+	return Params(req)
+}
+
+// Params - this function returns any URL parameter if it exists
 func Params(req *http.Request) url.Values {
 	return context.Get(req, "params").(url.Values)
 }
