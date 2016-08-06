@@ -10,16 +10,28 @@ import (
 	"testing"
 )
 
-func TestDefaultHandler(t *testing.T) {
-	r := New(DefaultHandler)
-	response := get(r, "/")
-	if strings.Compare(response, "DefaultHandler") != 0 {
-		t.Fatalf("Expected a body with 'DefaultHandler' got '%s'", response)
+var defaultHandler = NewHandler("defaultHandler")
+var handlerZero = NewHandler("handlerZero")
+var handlerOne = NewHandler("handlerOne")
+var handlerTwo = NewHandler("handlerTwo")
+var handlerThree = NewHandler("handlerThree")
+var handlerFour = NewHandler("handlerFour")
+var handlerFive = NewHandler("handlerFive")
+var handlerSix = NewHandler("handlerSix")
+
+func NewHandler(body string) Handler {
+	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, body)
 	}
 }
 
-func DefaultHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "DefaultHandler")
+func TestdefaultHandler(t *testing.T) {
+	expected := "default"
+	r := New(NewHandler(expected))
+	actual := get(r, "/")
+	if strings.Compare(actual, expected) != 0 {
+		t.Fatalf("Expected a body with '%s' got '%s'", expected, actual)
+	}
 }
 
 func TestPaths(t *testing.T) {
@@ -31,13 +43,14 @@ func TestPaths(t *testing.T) {
 }
 
 func TestVerbs(t *testing.T) {
-	router := New(DefaultHandler)
+	router := New(defaultHandler)
 	router.Get("/t/b", handlerZero)
 	router.Post("t/b", handlerOne)
 	router.Put("t/b", handlerTwo)
 	router.Delete("t/b", handlerThree)
 	router.Connect("t/b", handlerFour)
 	router.Patch("t/b", handlerFive)
+	router.Options("/t/b", handlerFive)
 	router.Trace("t/b", handlerSix)
 	response := get(router, "/t/b")
 	if strings.Compare(response, "handlerZero") != 0 {
@@ -57,7 +70,7 @@ func TestParams(t *testing.T) {
 }
 
 func initRouter(methods []string, routes []string, handlers []Handler) *Router {
-	router := New(DefaultHandler)
+	router := New(defaultHandler)
 	for key, path := range routes {
 		router.Add(methods[key], path, handlers[key])
 	}
@@ -81,34 +94,11 @@ func testURL(baseURL, path string) string {
 }
 
 func paramHandler(w http.ResponseWriter, req *http.Request) {
-	params := Params(req)
-	fmt.Fprint(w, params.Get("name"))
-}
-
-func handlerZero(w http.ResponseWriter, req *http.Request) {
-	fmt.Fprint(w, "handlerZero")
-}
-
-func handlerOne(w http.ResponseWriter, req *http.Request) {
-	fmt.Fprint(w, "handlerOne")
-}
-
-func handlerTwo(w http.ResponseWriter, req *http.Request) {
-	fmt.Fprint(w, "handlerTwo")
-}
-
-func handlerThree(w http.ResponseWriter, req *http.Request) {
-	fmt.Fprint(w, "handlerThree")
-}
-
-func handlerFour(w http.ResponseWriter, req *http.Request) {
-	fmt.Fprint(w, "handlerFour")
-}
-
-func handlerFive(w http.ResponseWriter, req *http.Request) {
-	fmt.Fprint(w, "handlerFive")
-}
-
-func handlerSix(w http.ResponseWriter, req *http.Request) {
-	fmt.Fprint(w, "handlerSix")
+	router := New(defaultHandler)
+	body1 := router.Params(req).Get("name")
+	body2 := Params(req).Get("name")
+	if strings.Compare(body1, body2) != 0 {
+		panic(fmt.Sprintf("Expected %s to equal %s", body1, body2))
+	}
+	fmt.Fprint(w, body2)
 }
