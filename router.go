@@ -80,17 +80,19 @@ func Params(req *http.Request) url.Values {
 
 // ServeHTTP - this method is called every time a new request comes in
 func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	params := url.Values{}
-	context.Set(req, "params", params)
-	keys := strings.Split(req.URL.Path, "/")[1:]
-	node, _ := r.tree.search(strings.Join(keys, "/"), params)
-	handlers := node.handlers[req.Method]
-	if handlers == nil {
-		r.handler(w, req)
-		return
-	}
-	for _, h := range handlers {
-		h(w, req)
-	}
-	context.Clear(req)
+	go func() {
+		params := url.Values{}
+		context.Set(req, "params", params)
+		keys := strings.Split(req.URL.Path, "/")[1:]
+		node, _ := r.tree.search(strings.Join(keys, "/"), params)
+		handlers := node.handlers[req.Method]
+		if handlers == nil {
+			r.handler(w, req)
+			return
+		}
+		for _, h := range handlers {
+			h(w, req)
+		}
+		context.Clear(req)
+	}()
 }
