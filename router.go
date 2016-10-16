@@ -100,6 +100,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	context.Clear(req)
 }
 
+// Path - append a front slash to paths without it
 func (r *Router) Path(path string) string {
 	if path[0] == '/' {
 		path = path[1:]
