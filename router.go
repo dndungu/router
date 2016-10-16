@@ -5,7 +5,7 @@ import (
 	"github.com/gorilla/context"
 	"net/http"
 	"net/url"
-	"strings"
+	"sync"
 )
 
 // Handler - this a http handler middleware function
@@ -65,7 +65,7 @@ func (r *Router) Options(path string, handlers ...Handler) {
 
 // Add - this method adds a path and it's handlers to the router
 func (r *Router) Add(method, path string, handlers ...Handler) {
-	r.tree.insert(method, path, handlers...)
+	r.tree.insert(method, r.Path(path), handlers...)
 }
 
 // Params - this method returns any URL parameter if it exists
@@ -80,19 +80,29 @@ func Params(req *http.Request) url.Values {
 
 // ServeHTTP - this method is called every time a new request comes in
 func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	go func() {
-		params := url.Values{}
-		context.Set(req, "params", params)
-		keys := strings.Split(req.URL.Path, "/")[1:]
-		node, _ := r.tree.search(strings.Join(keys, "/"), params)
-		handlers := node.handlers[req.Method]
-		if handlers == nil {
-			r.handler(w, req)
-			return
-		}
-		for _, h := range handlers {
+	var wg sync.WaitGroup
+	params := url.Values{}
+	context.Set(req, "params", params)
+	path := r.Path(req.URL.Path)
+	node, _ := r.tree.search(path, params)
+	handlers := node.handlers[req.Method]
+	if handlers == nil {
+		handlers = []Handler{r.handler}
+	}
+	for _, h := range handlers {
+		wg.Add(1)
+		go func() {
 			h(w, req)
-		}
-		context.Clear(req)
-	}()
+			wg.Done()
+		}()
+	}
+	wg.Wait()
+	context.Clear(req)
+}
+
+func (r *Router) Path(path string) string {
+	if path[0] == '/' {
+		path = path[1:]
+	}
+	return path
 }

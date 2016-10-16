@@ -17,15 +17,11 @@ func newNode() *node {
 }
 
 func (n *node) insert(method, path string, handlers ...Handler) {
-	i := 0
-	if path[0] == '/' {
-		i = 1
-	}
-	keys := strings.Split(path[i:], "/")
+	keys := strings.Split(path, "/")
 	count := len(keys)
 	for {
-		child, key := n.search(path[i:], nil)
-		if child.key == key && count == 1 {
+		child, key := n.search(path[1:], nil)
+		if strings.Compare(child.key, key) == 0 && count == 1 {
 			child.handlers[method] = handlers
 			return
 		}
@@ -51,7 +47,7 @@ func (n *node) search(path string, params url.Values) (*node, string) {
 		return n, keys[0]
 	}
 	for _, child := range n.children {
-		if keys[0] != child.key && child.param == false {
+		if strings.Compare(keys[0], child.key) != 0 && child.param == false {
 			continue
 		}
 		if child.param && params != nil {
