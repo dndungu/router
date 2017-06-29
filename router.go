@@ -85,12 +85,12 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	context.Set(req, "params", params)
 	path := r.Path(req.URL.Path)
 	node, _ := r.tree.search(path, params)
-	handlers := node.handlers[req.Method]
-	if handlers == nil {
+	handlers, ok := node.handlers[req.Method]
+	if !ok {
 		handlers = []Handler{r.handler}
 	}
+	wg.Add(len(handlers))
 	for _, h := range handlers {
-		wg.Add(1)
 		go func() {
 			h(w, req)
 			wg.Done()
