@@ -8,63 +8,60 @@ import (
 	"sync"
 )
 
-// Handler - this a http handler middleware function
-type Handler func(http.ResponseWriter, *http.Request)
-
 // Router - the router keeps a record of different paths and their handlers, it will direct incoming http calls to the right handler
 type Router struct {
 	tree    *node
-	handler Handler
+	handler http.HandlerFunc
 }
 
 // New - this method creates a new instance of a router
-func New(handler Handler) *Router {
+func New(handler http.HandlerFunc) *Router {
 	root := newNode()
 	return &Router{tree: root, handler: handler}
 }
 
 // Connect - add a CONNECT handler for the specified path
-func (r *Router) Connect(path string, handlers ...Handler) {
+func (r *Router) Connect(path string, handlers ...http.HandlerFunc) {
 	r.tree.insert("CONNECT", path, handlers...)
 }
 
 // Delete - add a DELETE handler for the specified path
-func (r *Router) Delete(path string, handlers ...Handler) {
+func (r *Router) Delete(path string, handlers ...http.HandlerFunc) {
 	r.tree.insert("DELETE", path, handlers...)
 }
 
 // Get - add a GET handler for the specified path
-func (r *Router) Get(path string, handlers ...Handler) {
+func (r *Router) Get(path string, handlers ...http.HandlerFunc) {
 	r.tree.insert("GET", path, handlers...)
 }
 
 // Post - add a POST handler for the specified path
-func (r *Router) Post(path string, handlers ...Handler) {
+func (r *Router) Post(path string, handlers ...http.HandlerFunc) {
 	r.tree.insert("POST", path, handlers...)
 }
 
 // Put - add a PUT handler for the specified path
-func (r *Router) Put(path string, handlers ...Handler) {
+func (r *Router) Put(path string, handlers ...http.HandlerFunc) {
 	r.tree.insert("PUT", path, handlers...)
 }
 
 // Patch - add a PATCH handler for the specified path
-func (r *Router) Patch(path string, handlers ...Handler) {
+func (r *Router) Patch(path string, handlers ...http.HandlerFunc) {
 	r.tree.insert("PATCH", path, handlers...)
 }
 
 // Trace - add a TRACE handler for the specified path
-func (r *Router) Trace(path string, handlers ...Handler) {
+func (r *Router) Trace(path string, handlers ...http.HandlerFunc) {
 	r.tree.insert("TRACE", path, handlers...)
 }
 
 // Options - add a OPTIONS handler for the specified path
-func (r *Router) Options(path string, handlers ...Handler) {
+func (r *Router) Options(path string, handlers ...http.HandlerFunc) {
 	r.tree.insert("OPTIONS", path, handlers...)
 }
 
 // Add - this method adds a path and it's handlers to the router
-func (r *Router) Add(method, path string, handlers ...Handler) {
+func (r *Router) Add(method, path string, handlers ...http.HandlerFunc) {
 	r.tree.insert(method, r.Path(path), handlers...)
 }
 
@@ -87,7 +84,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	node, _ := r.tree.search(path, params)
 	handlers, ok := node.handlers[req.Method]
 	if !ok {
-		handlers = []Handler{r.handler}
+		handlers = []http.HandlerFunc{r.handler}
 	}
 	wg.Add(len(handlers))
 	for _, h := range handlers {
